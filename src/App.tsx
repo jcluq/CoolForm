@@ -1,9 +1,10 @@
 import { useEffect, useState,} from "react";
-import { CvForm } from "./components/CvForm";
+import { PersonalDataForm } from "./components/personalData";
 import { Cv } from "./components/Cv";
 import { EduForm } from "./components/edu/eduForm";
 import { ProfessionalExpForm } from "./components/professionalExp/professionalExpForm";
 import { PersonalData } from "./interfaces";
+import { About } from "./components/about";
 
 interface EducationData {
   id:number;
@@ -20,12 +21,7 @@ interface EducationDataArray extends Array<EducationData> {};
 
 function App() {
 
-  const [personalInfo,setPersonalInfo] = useState<PersonalData>( {
-    name: "Name",
-    phone:  123456789,
-    email: "example@example.com", 
-    about: "Some text about yous bdkjfkjf  asdsadasdskfjsf jsdklj; slfkjds ;fj;sadjvfadivfa svfna sjvnhfadnh vflaka bdkjfkjf  asdsadasdskfjsf jsdklj; slfkjds ;fj;sadjvfadivfa svfna sjvnhfadnh vflakabdkjfkjf  asdsadasdskfjsf jsdklj; slfkjds ;fj;sadjvfadivfa svfna sjvnhfadnh vflaka"
-  });
+  const [personalInfo,setPersonalInfo] = useState<PersonalData | undefined>( );
 
   const [eduInfo, setEduInfo] = useState<EducationDataArray>([]);
 
@@ -48,18 +44,24 @@ function App() {
   }, []); 
 
   return (
-    <div className="App flex h-screen" >
-      <div className=" w-3/12">
-      <CvForm setFunction={handlePersonalInfo} /> 
-      <EduForm setFunction={handleEductationInfo}/>
+    <>
+    
+    <div className="App flex h-screen justify-center" >
+
+    
+        <div className=" w-3/12">
+        <PersonalDataForm setFunction={handlePersonalInfo} /> 
+        <EduForm setFunction={handleEductationInfo}/>
+        </div>
+        <Cv pInfo = {personalInfo} educationInfo={eduInfo} professionalInfo ={professionalInfo}/>
+        <div className=" w-3/12">
+          
+          <ProfessionalExpForm setFunction={handleProfessionalInfo}/>
+          <About/>
+        </div>
+      
       </div>
-      <Cv pInfo = {personalInfo} educationInfo={eduInfo} professionalInfo ={professionalInfo}/>
-      <div className=" w-3/12">
-        
-        <ProfessionalExpForm setFunction={handleProfessionalInfo}/>
-        
-      </div>
-    </div>
+    </>
   );
 }
 

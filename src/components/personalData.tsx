@@ -12,12 +12,12 @@ interface Props {
 
 const validationSchema = yup.object({
     name: yup.string().required("Full Name is required"),
-    phone: yup.number().required("Please insert a phone number"),
+    phone: yup.number().required("Please insert a phone number").typeError("Please write a phone number"),
     email: yup.string().required("Email is required"),
     about: yup.string().required("A description about you is required"),
   });
 
-export const CvForm = (props: Props) => {
+export const PersonalDataForm = (props: Props) => {
    
     const {register, handleSubmit, formState: {errors}} = useForm<PersonalData>({
         resolver: yupResolver(validationSchema)
@@ -38,7 +38,7 @@ export const CvForm = (props: Props) => {
     return (
         
         <div className="cvform flex flex-col  bg-emerald-300 p-2 m-4  rounded-lg max-h-fit shadow-lg">
-            <h2 className=" m-auto ">Cv Form</h2>
+            <h2 className=" m-auto ">Personal Data</h2>
             <form onSubmit={handleSubmit(onSubmitHandler)} className=" flex flex-col  m-3" >
                 
                     <label htmlFor="name" className=" flex mx-4 my-2 justify-between ">

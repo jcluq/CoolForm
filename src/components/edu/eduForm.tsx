@@ -1,6 +1,8 @@
-import { FormEvent, useState, useEffect } from "react";
+import {  useState, } from "react";
 import { EduField } from "./eduField";
-import { EducationData, educationDataSchema } from "../../interfaces";
+import { EducationData, educationDataSchema} from "../../interfaces";
+import { useForm,  useFieldArray } from "react-hook-form"
+import {yupResolver} from "@hookform/resolvers/yup";
 
 interface Props {
     setFunction: Function
@@ -8,141 +10,102 @@ interface Props {
 
 
 
+
 let schema = educationDataSchema;
 
-interface EducationDataArray extends Array<EducationData> { };
+
 
 
 export const EduForm = (props: Props) => {
 
-    const [eduExps, setEduExps] = useState<EducationDataArray>([]);
-    const [hasErrors, setHasErrors] = useState<boolean>(true);
-   
+    const [eduExps, setEduExps] = useState<EducationData[]>([]);
+    const { control, handleSubmit, getValues, register, formState: {errors}} = useForm({
+        resolver: yupResolver(educationDataSchema)
+    });
+    const { fields , append, remove, } = useFieldArray({
+        control,
+        name: 'array'
+    });
 
+    
+    const onSubmit = (data: any) => {
 
-    const verifyErrors = async() => {
-        
-        eduExps.forEach(exp => {
-            schema.validate(exp, { abortEarly: false })
-                .then((responseData) => {
-                    //console.log("no validation errors");
-                    //console.log(responseData);
-
-
-                })
-                .catch((err) => {
-                    console.log(err.errors);
-
-                    let newObj = {...exp,error:err.errors};
-                   
-                    updateFromChild(newObj);
-                    
-                    setHasErrors(true);
-
-                });
-        
-
-        })
-    }
-
-  
-
-    const onSubmit = (event: FormEvent) => {       
-        event.preventDefault();
-        setHasErrors(false);
-        verifyErrors();
-       
-        
-       
-       
-        hasErrors!= true && props.setFunction(eduExps);
-
+        console.log(data);
+        setEduExps(data.array);
+        props.setFunction(data.array);
 
     }
 
-    const updateFromChild = (obj: EducationData) => {
 
-        let newArray = [...eduExps]
-        newArray[obj.id] = obj;
-        setEduExps(newArray);
- 
-    }
 
-    const addEduExp = (ide: number) => {
+    const addEduExp = () => {
+        append({
 
-        let newExp = {
-            id: ide,
+
             school: "",
             title: "",
             year: {
                 start: 0,
                 end: 0,
             }
-        };
+        })
 
-        let newArray = [...eduExps];
-        newArray[newExp.id] = newExp;
-        setEduExps(newArray);
-        //console.log(eduExps.length)
-
+        setEduExps(getValues().array);
+        
     }
+
+
+
+
 
     const removeEduExp = () => {
-        let newArray = [...eduExps];
-        newArray.pop();
-        setEduExps(newArray);
-        //console.log(newArray)
+        remove(eduExps.length-1);
+        setEduExps(getValues().array);
+
     }
 
-    useEffect(() => {
-        let newArray = [...eduExps];
-        newArray[0] = {
-            id: 0,
-            school: "",
-            title: "",
-            year: {
-                start: 0,
-                end: 0,
-            }
-        }
-        setEduExps(newArray);
-      
-    }, []);
 
 
-   
+    //console.log('form errors >>>>>', errors);
 
-    useEffect(()=> {
-        console.log(hasErrors)
-    },[hasErrors]
-    )
+
 
     return (
 
 
-        <div className=" flex flex-col  bg-emerald-300 p-2 m-4  rounded-lg max-h-fit shadow-lg">
+        <div className=" flex flex-col  bg-emerald-300 p-2 m-4 rounded-lg max-h-fit shadow-lg">
             <h2 className=" m-auto ">Education</h2>
-            <form className="flex flex-col  m-3" onSubmit={onSubmit}>
 
-
+            <form className="flex flex-col  m-3" onSubmit={handleSubmit(onSubmit)}>
 
 
                 {
-                    eduExps.map((edu: EducationData) => (
-                        
-                        <EduField key={edu.id} id={edu.id} setFunction={updateFromChild} error={edu.error}/>
+                    fields.map((field, index) => (
+                        <EduField
+                            key={field.id}
+                            index={index}
+                            register={register}  
+                            value={field}
+                            errors={errors?.array?.[index]}
+                        />
+
                     ))
                 }
 
-                <div className="flex justify-center">
-                    {eduExps.length > 1 && <button type="button" onClick={removeEduExp} className=" bg-stone-200 rounded-md w-24 m-4">-</button>}
 
-                    <button type="button" className=" bg-stone-200 rounded-md w-24 m-4 " onClick={() => addEduExp(eduExps.length)}>+</button>
+
+
+
+                <div className="flex justify-center">
+                    {eduExps.length > 0 && <button type="button" onClick={removeEduExp} className=" bg-stone-200 rounded-md w-24 m-4">-</button>}
+
+                    <button type="button" className=" bg-stone-200 rounded-md w-24 m-4 " onClick={addEduExp}>+</button>
                 </div>
-                <input type="submit" className=" bg-stone-200 rounded-md w-24 m-4 cursor-pointer" ></input>
+                {eduExps.length > 0  && <input type="submit" className=" bg-stone-200 rounded-md w-24 m-4 cursor-pointer" ></input> }
 
 
             </form>
+
         </div>
 
 

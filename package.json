@@ -1,7 +1,7 @@
 {
   "name": "template-vite-react-ts-tailwind-v3",
   "version": "0.0.0",
-  "base": "/CoolForm",
+  "base": "CoolForm",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

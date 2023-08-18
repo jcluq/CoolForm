@@ -17,7 +17,7 @@ export const Cv = (props: Props) => {
     return (
         <>
             <div className="cvform flex flex-col bg-slate-100 p-8 m-4 w-1/3 h-4/5 rounded-lg">
-
+            { !props.pInfo && <p className=" italic">Please fill and submit the forms in order to populate the CV.</p>}
             { props?.pInfo && 
                 <>
                 <h1 className=" font-bold text-xl">{props.pInfo.name}</h1>
